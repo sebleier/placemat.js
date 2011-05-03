@@ -12,14 +12,14 @@ placemat.js uses store.js for caching templates client-side. Then for each
 request, your server declares what templates it wants to use.  If they don't
 exist in the cache, then they are retrieved from the server. If they exist in
 the cache, but the sha is different, they are also retrieved from the server.
-Otherwise, the templates are loaded from the cache, saving a round trip from
-the server.
+Otherwise, the templates are loaded from the cache, saving a round trip to the
+server.
 
 placemat.js provides a template rendering backend with its own template loader
 for plate.js so that templates can go through the caching/fetching process
 transparently so that you can focus on writing templates.
 
-placemat.js supports different type of template rendering which include
+placemat.js supports different types of template rendering which include
 replacing content (default), prepending, appending, and sorted insert.  The last
 three are for list type data rendering.
 
@@ -27,7 +27,7 @@ Requirements:
 -------------
 
     * `jQuery`_ (For Dom manipulation)
-    * `store.js`_ (For persistant client-side storage)
+    * `store.js`_ (For persistent client-side storage)
     * `plate.js`_ (For Template rendering, but can be swapped out for another template engine)
 
 .. _`jQuery`: http://jquery.com
@@ -89,25 +89,25 @@ posts/item_video.html::
     <video src="{{ item.url }}" />
 
 
-What is exactly going on?
+What exactly is going on?
 -------------------------
 
 First we have the javascript that instantiates a placemat instance and registers
 the templates provided by the server app.  Templates may be registered as a
 single string, which is a url relative to the where ever the ``prefix`` variable
-is set.  You can define the ``prefix`` variabe to something like
+is set.  You can define the ``prefix`` variable to something like
 ``var mat = new placemat({'prefix': 'http://templates.example.com'});``.  You
 can also register a list of paths or an object that maps templates to their
-hash.  The later is the prefered method, since we want templates to be cached
+hash.  The later is the preferred method, since we want templates to be cached
 client-side.  Registering a list or a single string will cause placemat to
 fetch the template and bypass the cache.
 
 The Second step is to get the data that will populate a ``Context``.  A
 ``Context`` is data that is assigned a target and template so we can find the
 target in the DOM, determine what kind of rendering method to use, and then
-proceed with rendering the template with the data.
+proceed with rendering the template using the data.
 
-As you can see from the example HTML, you can specifiy different rendering flags
+As you can see from the example HTML, you can specify different rendering flags
 on the target node.  In this instance, we specify ``data-render="sorted"``
 , ``data-sorted-on="article > time"``, and ``data-sort-order="desc"`` on the
 section element. ``data-render`` can either be ``append``, ``prepend``, or
