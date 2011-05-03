@@ -26,10 +26,13 @@ three are for list type data rendering.
 Requirements:
 -------------
 
-    * jQuery (For Dom manipulation)
-    * store.js (For persistant client-side storage)
-    * plate.js (For Template rendering, but can be swapped out for another template engine)
+    * `jQuery`_ (For Dom manipulation)
+    * `store.js`_ (For persistant client-side storage)
+    * `plate.js`_ (For Template rendering, but can be swapped out for another template engine)
 
+.. _`jQuery`: http://jquery.com
+.. _`store.js`: http://github.com/marcuswestin/store.js
+.. _`plate.js`: http://github.com/chrisdickinson/plate
 
 Show me some code!
 ------------------
@@ -60,7 +63,7 @@ Example HTML::
             ...
         </head>
         <body>
-            <section id="timeline" data-render="sorted" data-sort-on="article > time"></section>
+            <section id="timeline" data-render="sorted" data-sort-on="article > time" data-sort-order="desc"></section>
         </body>
     </html>
 
@@ -80,3 +83,37 @@ posts/item.html::
 posts/item_photo.html::
 
     <img src="{{ item.url }}" />
+
+posts/item_video.html::
+
+    <video src="{{ item.url }}" />
+
+
+What is exactly going on?
+-------------------------
+
+First we have the javascript that instantiates a placemat instance and registers
+the templates provided by the server app.  Templates may be registered as a
+single string, which is a url relative to the where ever the ``prefix`` variable
+is set.  You can define the ``prefix`` variabe to something like
+``var mat = new placemat({'prefix': 'http://templates.example.com'});``.  You
+can also register a list of paths or an object that maps templates to their
+hash.  The later is the prefered method, since we want templates to be cached
+client-side.  Registering a list or a single string will cause placemat to
+fetch the template and bypass the cache.
+
+The Second step is to get the data that will populate a ``Context``.  A
+``Context`` is data that is assigned a target and template so we can find the
+target in the DOM, determine what kind of rendering method to use, and then
+proceed with rendering the template with the data.
+
+As you can see from the example HTML, you can specifiy different rendering flags
+on the target node.  In this instance, we specify ``data-render="sorted"``
+, ``data-sorted-on="article > time"``, and ``data-sort-order="desc"`` on the
+section element. ``data-render`` can either be ``append``, ``prepend``, or
+``sorted`` so that new contexts that target that section element are inserted in
+the right place.  The ``data-sorted-on`` flag is a jQuery selector that selects
+the element that holds the value to be used for determining the place.  Finally,
+the ``data-sort-order`` flag specifies the order in which the articles are
+ordered.  Descending means that the articles would render latest on the top and
+oldest on the bottom.
