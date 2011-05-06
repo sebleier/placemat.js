@@ -42,17 +42,14 @@ Example javascript::
     var templates = {
         '77f1dd49b49dc267a2c6f872f640df46688a5a54': 'timeline/item.html',
         'b8330f5a1065f3916946d80c5ba109f0d0c653e6': 'timeline/item_photo.html',
-        '4c26c88f7bf94cce5aac2f1ff77e7c2d4329ca4c': 'timeline/item_video.html'
     }
 
-    var mat = new placemat();
-
-    mat.register(templates);
+    var placemat = new placemat();
+    placemat.fetch(templates);
 
     // Get Some Data
     $.getJSON("/timeline.json", function(data) {
-        mat.add_context("#timeline", "posts/item.html", data);
-        mat.render();
+        placemat.render("#timeline", "posts/item.html", data);
     });
 
 Example HTML::
@@ -95,20 +92,28 @@ What exactly is going on?
 First we have the javascript that instantiates a placemat instance and registers
 the templates provided by the server app.  Templates may be registered as a
 single string, which is a url relative to the where ever the ``prefix`` variable
-is set.  You can define the ``prefix`` variable to something like
+is set.  You can define the ``prefix`` variable when initiating placemat, e.g.
 ``var mat = new placemat({'prefix': 'http://templates.example.com'});``.  You
 can also register a list of paths or an object that maps templates to their
 hash.  The later is the preferred method, since we want templates to be cached
 client-side.  Registering a list or a single string will cause placemat to
-fetch the template and bypass the cache.
+fetch the template and bypass the cache.  All of the following are acceptable
+ways to register templates::
+
+    placemat.fetch('/timeline/item.html'); // Not cached
+    placemat.fetch(['/timeline/item.html', 'timeline/item_photo.html']); // Not cached
+    placemat.fetch({
+        '77f1dd49b49dc267a2c6f872f640df46688a5a54': 'timeline/item.html',
+        'b8330f5a1065f3916946d80c5ba109f0d0c653e6': 'timeline/item_photo.html',
+    }); // Cached
 
 The Second step is to get the data that will populate a ``Context``.  A
-``Context`` is data that is assigned a target and template so we can find the
-target in the DOM, determine what kind of rendering method to use, and then
-proceed with rendering the template using the data.
+``Context`` is data that is assigned a target DOM element and template so we can
+find the target in the DOM, determine what kind of rendering method to use, and
+then proceed with rendering the template using the data.
 
 As you can see from the example HTML, you can specify different rendering flags
-on the target node.  In this instance, we specify ``data-render="sorted"``
+on the target element.  In this instance, we specify ``data-render="sorted"``
 , ``data-sorted-on="article > time"``, and ``data-sort-order="desc"`` on the
 section element. ``data-render`` can either be ``append``, ``prepend``, or
 ``sorted`` so that new contexts that target that section element are inserted in
@@ -117,3 +122,8 @@ the element that holds the value to be used for determining the place.  Finally,
 the ``data-sort-order`` flag specifies the order in which the articles are
 ordered.  Descending means that the articles would render latest on the top and
 oldest on the bottom.
+
+One thing to note is that in ``posts/item.html`` we have a reference to
+``posts/item_video.html`` but we did not load it up in the beginning.  That's
+ok because the Placemat Backends provide template loaders that delegate
+Placemat to do all the template loading.
