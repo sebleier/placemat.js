@@ -45,3 +45,37 @@ exports.PlacematTests = platoon.unit({
     assert.equal(typeof(placemat.cookieMonster), "undefined");
   }
 );
+
+
+exports.fetchTests = platoon.unit({
+    setUp:function(callback) {
+        callback();
+    },
+    tearDown:function(callback) {
+        callback();
+    },
+  },
+  function(assert) {
+    "Testing that the proper amount of templates are being fetched with all three object types"
+    placemat = new Placemat();
+    var callCount = 0;
+    placemat.fetchTemplate = function(obj) {
+      callCount++;
+    };
+    placemat.checkAndSet = function(path, hash) {
+      assert.equal(hash.length, 40);
+      callCount++;
+    };
+    placemat.fetch("/timeline/item.htm");
+    assert.equal(callCount, 1);
+    callCount = 0;
+    placemat.fetch(["/timeline/item.htm", "timeline/item_photo.html"]);
+    assert.equal(callCount, 2);
+    callCount = 0;
+    placemat.fetch({
+        '77f1dd49b49dc267a2c6f872f640df46688a5a54': 'timeline/item.html',
+        'b8330f5a1065f3916946d80c5ba109f0d0c653e6': 'timeline/item_photo.html'
+    });
+    assert.equal(callCount, 2);
+  }
+);
