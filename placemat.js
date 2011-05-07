@@ -1,4 +1,3 @@
-var AsyncResult;
 /*
 Backends are responsible for providing a compatibility layer between Placemat
 and their template engine.  They need to provide two important functions. First,
@@ -12,9 +11,6 @@ window.PlateBackend = function(placemat) {
   self.placemat = placemat;
 
   this.Template = function(raw, libraries, parser) {
-    // wrap the plate template object. anything returned from a function called with ``new FN()`` will
-    // be assigned to the caller -- that is to say, you'll get an instance of ``plate.Template`` when you
-    // call ``new PlateTemplate``, not the wrapped function. weird, huh?
 
     // grab the new plugin library with our loader
     var plugin_library = self.getDefaultPluginLibrary();
@@ -76,12 +72,9 @@ window.PlateBackend = function(placemat) {
   };
 };
 
-var TemplateDoesNotExist = function(message) {
-  this.message = message;
-};
-
-// PLACEMAT
-
+/**********
+* PLACEMAT
+**********/
 
 (function(global, $) {
 
@@ -223,15 +216,44 @@ var TemplateDoesNotExist = function(message) {
     return this.Templates[path];
   };
 
-  Placemat.prototype.render = function(target, template, data) {
-    var html;
+  Placemat.prototype.render = function(target, template, context) {
+    var html, callback, sortOn, sortOrder, i, j, val;
+    var obj = $(target);
+    var render = obj.data().render;
     var tpl = this.Templates[template];
     if (tpl instanceof AsyncResult) {
       tpl = template.get();
     }
-    this.backend.render(tpl, data, function(err, data) {
-      $(target).html(data);
-    });
+    if (typeof(render) === "undefined") {
+      this.backend.render(tpl, context, function(err, data) { obj.html(data); });
+    } else {
+      sortOn = obj.data().sortOn;
+      sortOrder = obj.data().sortOrder;
+      if (typeof(sortOrder) === "undefined") {
+        sortOrder = "desc"
+      } else {
+        sortOrder = sortOrder.toLowerCase();
+      }
+      for(i = 0; i < context.length; i++) {
+        switch(render) {
+          case 'prepend':
+            callback = function(err, data) {
+              obj.prepend($(data));
+            }
+            break;
+          case 'append':
+            callback = function(err, data) {
+              obj.append($(data));
+            }
+            break;
+          case 'sorted':
+            // TODO: implement
+            break;
+          default:
+        }
+        this.backend.render(tpl, context[i], callback);
+      }
+    }
   };
 
   global.Placemat = Placemat;

@@ -26,7 +26,7 @@ three are for list type data rendering.
 Requirements:
 -------------
 
-    * `jQuery`_ (For Dom manipulation)
+    * `jQuery`_  >= 1.6 (For Dom manipulation)
     * `store.js`_ (For persistent client-side storage)
     * `plate.js`_ (For Template rendering, but can be swapped out for another template engine)
 
