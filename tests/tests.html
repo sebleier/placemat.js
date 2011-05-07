@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+	<head>
+        <title>Platoon Tests</title>
+        <style type="text/css">
+            .pass   { color:#128821; }
+            .fail   { color:red; }
+            .error  { color:#882200; }
+            .fail.error { color:#FF8800; }
+
+            body    { font-size:16px; font-family:"Helvetica Neue", "Helvetica", sans-serif; }
+            body    { background:#CCC; }
+            body    { color:#CC8800; text-shadow:0px -1px 0px rgba(255,255,255,0.3); }
+
+            #target { width:960px; margin:0pt auto; }
+        </style>
+        <script type='text/javascript' src='http://code.jquery.com/jquery-1.6.min.js'></script>
+        <script type="text/javascript" src="https://github.com/chrisdickinson/platoon/raw/master/lib/platoon.js"></script>
+        <script type="text/javascript" src="https://github.com/chrisdickinson/platoon/raw/master/lib/dom.js"></script>
+        <script type="text/javascript" src="https://github.com/marcuswestin/store.js/raw/master/store+json2.min.js"></script>
+        <script type="text/javascript" src="../placemat.js"></script>
+	</head>
+    <body>
+        <div id="target">
+        </div>
+        <script type="text/javascript">
+            setupEnvironment = function() {
+                window.require = function(what) {
+                    var part = window;
+                    what = what.replace(/\//g, '.').split('.');
+                    while(what.length) {
+                        part = part[what.shift()];
+                    }
+                    return part;
+                };
+                window.exports = {};
+            };
+            setupEnvironment();
+        </script>
+
+        <script type="text/javascript" src="placemat.js"></script>
+
+        <script type="text/javascript">
+            jQuery(function() {
+                platoonRunner(exports);
+            });
+        </script>
+    </body>
+</html>
