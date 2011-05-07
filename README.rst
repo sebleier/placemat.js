@@ -47,7 +47,7 @@ Example javascript::
         'b8330f5a1065f3916946d80c5ba109f0d0c653e6': 'timeline/item_photo.html',
     }
 
-    var placemat = new placemat();
+    var placemat = new Placemat();
     placemat.fetch(templates);
 
     // Get Some Data
@@ -92,8 +92,8 @@ posts/item_video.html::
 What exactly is going on?
 -------------------------
 
-First we have the javascript that instantiates a placemat instance and registers
-the templates provided by the server app.  Templates may be registered as a
+First we have the javascript that instantiates a placemat instance and fetches
+the templates provided by the server app.  Templates may be fetched using a
 single string, which is a url relative to the where ever the ``prefix`` variable
 is set.  You can define the ``prefix`` variable when initiating placemat, e.g.
 ``var mat = new placemat({'prefix': 'http://templates.example.com'});``.  You
