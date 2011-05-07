@@ -63,7 +63,7 @@ window.PlateBackend = function(placemat) {
 
     "lookup": function(name, callback) {
       var template = self.placemat.getTemplate(name);
-      if(typeof template !== "undefined") {
+      if(typeof(template) !== "undefined") {
         callback(null, template);
       } else {
         callback(new Error("Could not find '"+name+"'"));
@@ -81,13 +81,13 @@ window.PlateBackend = function(placemat) {
   Placemat = function(backend, opts) {
     var opt;
     var self = this;
-    if (typeof backend === "undefined") {
+    if (typeof(backend) === "undefined") {
       backend = new PlateBackend(this);
     }
     this.backend = backend;
 
     // Optional keyword arguments
-    if (typeof opts === "undefined") {
+    if (typeof(opts) === "undefined") {
       opts = {};
     }
     var options = {
@@ -110,7 +110,7 @@ window.PlateBackend = function(placemat) {
       this.get = function() {
         var endTime = new Date();
         while(((endTime - startTime) / 1000) < timeout) {
-          if (typeof self.Templates[path] !== "undefined") {
+          if (typeof(self.Templates[path]) !== "undefined") {
             return self.Templates[path];
           }
         }
@@ -135,7 +135,7 @@ window.PlateBackend = function(placemat) {
           this.checkAndSet(obj[hash], hash);
         }
       }
-    } else if (typeof obj === "string") {
+    } else if (typeof(obj) === "string") {
       this.fetchTemplate(obj);
     }
   };
@@ -153,7 +153,7 @@ window.PlateBackend = function(placemat) {
     var self = this;
 
     if (async) {
-      self.Templates[path] = new AsyncResult(path, 30);
+      self.Templates[path] = new this.AsyncResult(path, 30);
     }
 
     $.ajax({
@@ -166,7 +166,7 @@ window.PlateBackend = function(placemat) {
         an html template.  If data it is an object, it is interpreted as an
         object,
         */
-        if (typeof data === "string") {
+        if (typeof(data) === "string") {
           self.Templates[path] = new self.backend.Template(data);
         } else {
           self.Templates[path] = new self.backend.Template(data.template);
@@ -191,14 +191,14 @@ window.PlateBackend = function(placemat) {
     template with the new one.  If the template does exist in the cache, then
     load the template and check to make sure if all the templates have loaded.
     */
-    async = typeof async === "undefined" ? true : async;
+    async = typeof(async) === "undefined" ? true : async;
 
     // Check Session cache to see if template has already been loaded
     var template = this.Templates[path];
-    if (typeof template === 'undefined') {
+    if (typeof(template) === 'undefined') {
       // Check the cross-session cache if template exists
       template = store.get(path);
-      if (typeof template === "undefined") { // Cache miss
+      if (typeof(template) === "undefined") { // Cache miss
         this.Templates[path] = this.fetchTemplate(path, async);
       } else if (template.hash !== hash) { // Template has changed
         this.Templates[path] = this.fetchTemplate(path, async);
@@ -221,7 +221,7 @@ window.PlateBackend = function(placemat) {
     var obj = $(target);
     var render = obj.data().render;
     var tpl = this.Templates[template];
-    if (tpl instanceof AsyncResult) {
+    if (tpl instanceof this.AsyncResult) {
       tpl = template.get();
     }
     if (typeof(render) === "undefined") {
