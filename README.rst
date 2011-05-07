@@ -4,6 +4,9 @@ Placemat.js
 placemat.js is a template and context manager using template rendering engines
 to place rendered html code into specific targets in the DOM.
 
+**NOTE:**  *This is barely alpha right now.  Name of the project might change, api
+will probably change, and certain functionality doesn't work as described below.*
+
 
 How does it Work?
 -----------------
@@ -100,12 +103,12 @@ client-side.  Registering a list or a single string will cause placemat to
 fetch the template and bypass the cache.  All of the following are acceptable
 ways to register templates::
 
-    placemat.fetch('/timeline/item.html'); // Not cached
-    placemat.fetch(['/timeline/item.html', 'timeline/item_photo.html']); // Not cached
+    placemat.fetch('/timeline/item.html'); // Not cached across sessions
+    placemat.fetch(['/timeline/item.html', 'timeline/item_photo.html']); // Not cached across sessions
     placemat.fetch({
         '77f1dd49b49dc267a2c6f872f640df46688a5a54': 'timeline/item.html',
         'b8330f5a1065f3916946d80c5ba109f0d0c653e6': 'timeline/item_photo.html',
-    }); // Cached
+    }); // Cached across sessions
 
 The Second step is to get the data that will populate a ``Context``.  A
 ``Context`` is data that is assigned a target DOM element and template so we can
@@ -127,3 +130,9 @@ One thing to note is that in ``posts/item.html`` we have a reference to
 ``posts/item_video.html`` but we did not load it up in the beginning.  That's
 ok because the Placemat Backends provide template loaders that delegate
 Placemat to do all the template loading.
+
+
+TODO:
+-----
+
+Tests, Tests and MOAR TESTS
