@@ -132,6 +132,17 @@ ok because the Placemat Backends provide template loaders that delegate
 Placemat to do all the template loading.
 
 
+Testing
+-------
+
+To test::
+
+    cd placemat.js/tests
+    <browser of choice> tests.html
+
+Look at all the green!
+
+
 TODO:
 -----
 
