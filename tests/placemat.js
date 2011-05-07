@@ -1,6 +1,6 @@
 var platoon = require('platoon');
 
-exports.ExampleTest = platoon.unit({
+exports.PlacematTests = platoon.unit({
     setUp:function(callback) {
         callback();
     },
