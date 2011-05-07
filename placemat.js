@@ -103,7 +103,7 @@ window.PlateBackend = function(placemat) {
     this.Templates = {};
     this.Contexts = {};
 
-    this,AsyncResult = function(path, timeout) {
+    this.AsyncResult = function(path, timeout) {
       this.path = path;
       this.startTime = new Date();
 
