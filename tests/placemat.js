@@ -95,7 +95,6 @@ exports.fetchTemplateTests = platoon.unit({
     placemat.fetchTemplate(path, true);
     assert.isInstance(placemat.Templates[path], placemat.AsyncResult);
     var template = placemat.Templates[path].get();
-
     assert.isInstance(template, plate.Template);
   }
 );

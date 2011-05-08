@@ -137,8 +137,9 @@ Testing
 
 To test::
 
-    cd placemat.js/tests
-    <browser of choice> tests.html
+    cd placemat.js/testserver/
+    python manage.py runserver 8001
+    <browser of choice> http://127.0.0.1:8001/
 
 Look at all the green!
 
