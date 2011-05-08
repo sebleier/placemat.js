@@ -96,5 +96,14 @@ exports.fetchTemplateTests = platoon.unit({
     assert.isInstance(placemat.Templates[path], placemat.AsyncResult);
     var template = placemat.Templates[path].get();
     assert.isInstance(template, plate.Template);
+  },
+  function(assert) {
+    "Test when a template does not exist"
+    placemat = new Placemat();
+    var path = "path/that/does/not/exist";
+    placemat.fetchTemplate(path, true);
+    assert.isInstance(placemat.Templates[path], placemat.AsyncResult);
+    var template = placemat.Templates[path].get();
+    assert.isInstance(template, placemat.TemplateDoesNotExist);
   }
 );
