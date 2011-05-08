@@ -6,12 +6,13 @@ session cache, i.e. ``Placemat.Templates``.  They also need to be able to take
 one of their templates and render it using a object mapping variable names to
 values.
 */
+
+
 window.PlateBackend = function(placemat) {
   var self = this;
   self.placemat = placemat;
 
   this.Template = function(raw, libraries, parser) {
-
     // grab the new plugin library with our loader
     var plugin_library = self.getDefaultPluginLibrary();
     libraries = libraries || {};
@@ -78,24 +79,26 @@ window.PlateBackend = function(placemat) {
 
 (function(global, $) {
 
-  Placemat = function(backend, opts) {
+  Placemat = function(backend_cls, opts) {
     var opt;
     var self = this;
-    if (typeof(backend) === "undefined") {
-      backend = new PlateBackend(this);
+    if (typeof(backend_cls) === "undefined") {
+      backend_cls = PlateBackend;
     }
-    this.backend = backend;
+    this.backend = new backend_cls(this)
 
     // Optional keyword arguments
     if (typeof(opts) === "undefined") {
       opts = {};
     }
+
+    // Defaults
     var options = {
       'prefix': '/fragments/'
     };
     for (opt in options) {
       if (options.hasOwnProperty(opt)) {
-        this[opt] = opts[opt] || options[opt];
+        this[opt] = typeof(opts[opt]) !== "undefined" ? opts[opt] : options[opt];
       }
     }
 
@@ -103,20 +106,20 @@ window.PlateBackend = function(placemat) {
     this.Templates = {};
     this.Contexts = {};
 
-    this.AsyncResult = function(path, timeout) {
+    this.AsyncResult = function(path, jqxhr) {
       this.path = path;
-      this.startTime = new Date();
-
+      this.jqxhr = jqxhr;
+      var _self = this;
       this.get = function() {
-        var endTime = new Date();
-        while(((endTime - startTime) / 1000) < timeout) {
-          if (typeof(self.Templates[path]) !== "undefined") {
-            return self.Templates[path];
-          }
-        }
-        throw new Error("Timeout error");
+        _self.jqxhr.abort();
+        self.fetchTemplate(path, false);
+        return self.Templates[path];
       };
     };
+
+    this.TemplateDoesNotExist = function(message) {
+      this.message = message;
+    }
   };
 
   Placemat.prototype.fetch = function(obj) {
@@ -151,12 +154,7 @@ window.PlateBackend = function(placemat) {
     */
     var url = this.prefix + path;
     var self = this;
-
-    if (async) {
-      self.Templates[path] = new this.AsyncResult(path, 30);
-    }
-
-    $.ajax({
+    var jqxhr = $.ajax({
       'url': url,
       'type': 'GET',
       'async': async,
@@ -175,10 +173,13 @@ window.PlateBackend = function(placemat) {
       },
       'statusCode': {
         404: function() {
-          self.Templates[path] = new TemplateDoesNotExist(path + " template not found");
+          self.Templates[path] = new self.TemplateDoesNotExist(path + " template not found");
         }
       }
     });
+    if (async) {
+      self.Templates[path] = new this.AsyncResult(path, jqxhr);
+    }
   };
 
   Placemat.prototype.checkAndSet = function(path, hash, async) {
