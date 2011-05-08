@@ -152,9 +152,7 @@ window.PlateBackend = function(placemat) {
     either a string template or an object that contains a hash of the template
     along with the template contents.
     */
-    if (typeof(this.Templates[path]) !== "undefined" && !(this.Templates[path] instanceof this.AsyncResult)) {
-      return this.Templates[path];
-    }
+
     var url = this.prefix + path;
     var self = this;
     var jqxhr = $.ajax({
