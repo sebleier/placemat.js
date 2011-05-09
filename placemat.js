@@ -64,7 +64,7 @@ window.PlateBackend = function(placemat) {
 
     "lookup": function(name, callback) {
       var template = self.placemat.getTemplate(name);
-      if(typeof(template) !== "undefined") {
+      if(template !== undefined) {
         callback(null, template);
       } else {
         callback(new Error("Could not find '"+name+"'"));
@@ -82,13 +82,13 @@ window.PlateBackend = function(placemat) {
   Placemat = function(backend_cls, opts) {
     var opt;
     var self = this;
-    if (typeof(backend_cls) === "undefined") {
+    if (backend_cls === undefined) {
       backend_cls = PlateBackend;
     }
     this.backend = new backend_cls(this)
 
     // Optional keyword arguments
-    if (typeof(opts) === "undefined") {
+    if (opts === undefined) {
       opts = {};
     }
 
@@ -98,7 +98,7 @@ window.PlateBackend = function(placemat) {
     };
     for (opt in options) {
       if (options.hasOwnProperty(opt)) {
-        this[opt] = typeof(opts[opt]) !== "undefined" ? opts[opt] : options[opt];
+        this[opt] = opts[opt] !== undefined ? opts[opt] : options[opt];
       }
     }
 
@@ -193,14 +193,14 @@ window.PlateBackend = function(placemat) {
     template with the new one.  If the template does exist in the cache, then
     load the template and check to make sure if all the templates have loaded.
     */
-    async = typeof(async) === "undefined" ? true : async;
+    async = async === undefined ? true : async;
 
     // Check Session cache to see if template has already been loaded
     var template = this.Templates[path];
-    if (typeof(template) === 'undefined') {
+    if (template === undefined) {
       // Check the cross-session cache if template exists
       template = store.get(path);
-      if (typeof(template) === "undefined") { // Cache miss
+      if (template === undefined) { // Cache miss
         this.Templates[path] = this.fetchTemplate(path, async);
       } else if (template.hash !== hash) { // Template has changed
         this.Templates[path] = this.fetchTemplate(path, async);
@@ -226,12 +226,12 @@ window.PlateBackend = function(placemat) {
     if (tpl instanceof this.AsyncResult) {
       tpl = template.get();
     }
-    if (typeof(render) === "undefined") {
+    if (render === undefined) {
       this.backend.render(tpl, context, function(err, data) { obj.html(data); });
     } else {
       sortOn = obj.data().sortOn;
       sortOrder = obj.data().sortOrder;
-      if (typeof(sortOrder) === "undefined") {
+      if (sortOrder === undefined) {
         sortOrder = "desc"
       } else {
         sortOrder = sortOrder.toLowerCase();
