@@ -144,7 +144,8 @@ exports.fetchTemplateTests = platoon.unit({
 
 exports.renderTests = platoon.unit({
     setUp:function(callback) {
-        store.clear()
+        store.clear();
+        $("#dom-tests").empty();
         callback();
     },
     tearDown:function(callback) {
@@ -156,5 +157,16 @@ exports.renderTests = platoon.unit({
     var placemat = new Placemat(PlateBackend, {'prefix': 'http://127.0.0.1:8001/'});
     var template = new placemat.backend.Template("{{ name }}")
     placemat.backend.render(template, {'name': "Gary Busey"}, function(err, data) { assert.equal("Gary Busey", data)});
+  },
+  function(assert) {
+    "Test targeting dom element using the replace method"
+    var placemat = new Placemat(PlateBackend, {'prefix': 'http://127.0.0.1:8001/'});
+    placemat.Templates['person'] = new placemat.backend.Template("{{ name }}");
+
+    placemat.render("#dom-tests", 'person', {'name': "Thomas Edison"});
+    assert.equal($("#dom-tests").html(), "Thomas Edison");
+
+    placemat.render("#dom-tests", 'person', {'name': "Nikola Tesla"});
+    assert.equal($("#dom-tests").html(), "Nikola Tesla");
   }
 );
