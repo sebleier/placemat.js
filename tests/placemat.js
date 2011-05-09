@@ -140,3 +140,21 @@ exports.fetchTemplateTests = platoon.unit({
     assert.equal(template.message, "path/that/does/not/exist template not found")
   }
 );
+
+
+exports.renderTests = platoon.unit({
+    setUp:function(callback) {
+        store.clear()
+        callback();
+    },
+    tearDown:function(callback) {
+        callback();
+    },
+  },
+  function(assert) {
+    "Test simple rendering using the Plate backend"
+    var placemat = new Placemat(PlateBackend, {'prefix': 'http://127.0.0.1:8001/'});
+    var template = new placemat.backend.Template("{{ name }}")
+    placemat.backend.render(template, {'name': "Gary Busey"}, function(err, data) { assert.equal("Gary Busey", data)});
+  }
+);
