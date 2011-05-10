@@ -188,7 +188,7 @@ exports.renderTests = platoon.unit({
     assert.equal($("#dom-tests").html(), "<div>Nikola Tesla</div><div>Thomas Edison</div>");
   },
   function(assert) {
-    "Test targeting dom element using the prepend method"
+    "Test targeting dom element using the append method"
     $("#dom-tests").empty();
     $("#dom-tests").data("render", "append");
 
@@ -200,5 +200,43 @@ exports.renderTests = platoon.unit({
 
     placemat.render("#dom-tests", 'people', [{'name': "Nikola Tesla"}]);
     assert.equal($("#dom-tests").html(), "<div>Thomas Edison</div><div>Nikola Tesla</div>");
+  },
+  function(assert) {
+    "Test targeting dom element using the sorted method on the time element ascending order"
+    $("#dom-tests").empty();
+    $("#dom-tests").data("render", "sorted");
+    $("#dom-tests").data('sortOn', "> time");
+    $("#dom-tests").data('sortOrder', "asc");
+
+    var placemat = new Placemat(PlateBackend, {'prefix': 'http://127.0.0.1:8001/'});
+    placemat.Templates['people'] = new placemat.backend.Template("<div><h3>{{ name }}</h3><time>{{ time }}</time></div>");
+
+    placemat.render("#dom-tests", 'people', [{'name': "Thomas Edison", 'time': 1}]);
+    assert.equal($("#dom-tests").html(), "<div><h3>Thomas Edison</h3><time>1</time></div>");
+
+    placemat.render("#dom-tests", 'people', [{'name': "Nikola Tesla", 'time': 3}]);
+    assert.equal($("#dom-tests").html(), "<div><h3>Thomas Edison</h3><time>1</time></div><div><h3>Nikola Tesla</h3><time>3</time></div>");
+
+    placemat.render("#dom-tests", 'people', [{'name': "Stephen Hawking", 'time': 2}]);
+    assert.equal($("#dom-tests").html(), "<div><h3>Thomas Edison</h3><time>1</time></div><div><h3>Stephen Hawking</h3><time>2</time></div><div><h3>Nikola Tesla</h3><time>3</time></div>");
+  },
+  function(assert) {
+    "Test targeting dom element using the sorted method on the time element descending order"
+    $("#dom-tests").empty();
+    $("#dom-tests").data("render", "sorted");
+    $("#dom-tests").data('sortOn', "> time");
+    $("#dom-tests").data('sortOrder', "desc");
+
+    var placemat = new Placemat(PlateBackend, {'prefix': 'http://127.0.0.1:8001/'});
+    placemat.Templates['people'] = new placemat.backend.Template("<div><h3>{{ name }}</h3><time>{{ time }}</time></div>");
+
+    placemat.render("#dom-tests", 'people', [{'name': "Thomas Edison", 'time': 1}]);
+    assert.equal($("#dom-tests").html(), "<div><h3>Thomas Edison</h3><time>1</time></div>");
+
+    placemat.render("#dom-tests", 'people', [{'name': "Nikola Tesla", 'time': 3}]);
+    assert.equal($("#dom-tests").html(), "<div><h3>Nikola Tesla</h3><time>3</time></div><div><h3>Thomas Edison</h3><time>1</time></div>");
+
+    placemat.render("#dom-tests", 'people', [{'name': "Stephen Hawking", 'time': 2}]);
+    assert.equal($("#dom-tests").html(), "<div><h3>Nikola Tesla</h3><time>3</time></div><div><h3>Stephen Hawking</h3><time>2</time></div><div><h3>Thomas Edison</h3><time>1</time></div>");
   }
 );

@@ -219,44 +219,78 @@ window.PlateBackend = function(placemat) {
   };
 
   Placemat.prototype.render = function(target, template, context) {
-    var html, sortOn, sortOrder, i;
+    var html, i, method;
     var obj = $(target);
     var render = obj.data('render');
     var tpl = this.Templates[template];
     if (tpl instanceof this.AsyncResult) {
       tpl = template.get();
     }
-
     if (render === undefined) {
       this.backend.render(tpl, context, function(err, data) { obj.html(data); });
     } else {
       for (i = 0; i < context.length; i++) {
-        switch(render) {
-          case 'prepend':
-            this.backend.render(tpl, context[i], function(err, data) {
-              obj.prepend($(data));
-            });
-            break;
-          case 'append':
-            this.backend.render(tpl, context[i], function(err, data) {
-              obj.append($(data));
-            });
-            break;
-          case 'sorted':
-            // TODO: implement
-            sortOn = obj.data('sortOn');
-            sortOrder = obj.data('sortOrder');
-            if (sortOrder === undefined) {
-              sortOrder = "desc"
-            } else {
-              sortOrder = sortOrder.toLowerCase();
-            }
-            break;
-          default:
+        method = "render_"+render;
+        if (this[method] !== undefined) {
+          this[method](obj, tpl, context[i]);
         }
       }
     }
   };
+
+  Placemat.prototype.render_prepend = function(obj, tpl, context) {
+    this.backend.render(tpl, context, function(err, data) {
+      obj.prepend($(data));
+    });
+  }
+
+  Placemat.prototype.render_append = function(obj, tpl, context) {
+    this.backend.render(tpl, context, function(err, data) {
+      obj.append($(data));
+    });
+  }
+
+  Placemat.prototype.render_sorted = function(obj, tpl, context) {
+    var item;
+    var sortOn = obj.data('sortOn');
+    var sortOrder = obj.data('sortOrder');
+    if (sortOrder === undefined) {
+      sortOrder = "desc"
+    } else {
+      sortOrder = sortOrder.toLowerCase();
+    }
+    this.backend.render(tpl, context, function(err, data) {
+      var i, value;
+      var element = $(data);
+      var items = obj.children();
+      var new_value = JSON.parse(element.find(sortOn).html());
+      if (items.length === 0) {
+        obj.append(element);
+      }
+      for(i = 0; i < items.length; i++) {
+        item = $(items[i]);
+        value = JSON.parse(item.find(sortOn).html());
+        if (sortOrder === 'asc') {
+          if (new_value < value) {
+            element.insertBefore(item);
+            break;
+          }
+          if (i === items.length - 1) {
+            element.insertAfter(item);
+          }
+        } else if (sortOrder === 'desc') {
+          if (new_value > value) {
+            element.insertBefore(item);
+            break;
+          }
+          if (i === items.length - 1) {
+            element.insertAfter(item);
+          }
+        }
+      }
+    });
+  }
+
 
   global.Placemat = Placemat;
 
