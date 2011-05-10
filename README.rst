@@ -135,6 +135,11 @@ Placemat to do all the template loading.
 Testing
 -------
 
+`Django`_ is required for testing so that Placemat.js can retrieve templates
+from a server.
+
+.. _`Django`: http://djangoproject.com
+
 To test::
 
     cd placemat.js/testserver/
