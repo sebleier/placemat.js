@@ -80,6 +80,7 @@ window.PlateBackend = function(placemat) {
 (function(global, $) {
 
   Placemat = function(backend_cls, opts) {
+    this.__version__ = [0, 1, 0];
     var opt;
     var self = this;
     if (backend_cls === undefined) {
@@ -291,7 +292,11 @@ window.PlateBackend = function(placemat) {
     });
   }
 
+  Placemat.prototype.version = function() {
+    return this.__version__.join(".")
+  }
 
   global.Placemat = Placemat;
+
 
 }(window, jQuery));
