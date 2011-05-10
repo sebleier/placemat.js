@@ -80,9 +80,10 @@ window.PlateBackend = function(placemat) {
 (function(global, $) {
 
   Placemat = function(backend_cls, opts) {
-    this.__version__ = [0, 1, 0];
     var opt;
     var self = this;
+    this.VERSION = [0, 1, 0];
+    this.VERSION_STRING = this.VERSION.join(".");
     if (backend_cls === undefined) {
       backend_cls = PlateBackend;
     }
@@ -290,10 +291,6 @@ window.PlateBackend = function(placemat) {
         }
       }
     });
-  }
-
-  Placemat.prototype.version = function() {
-    return this.__version__.join(".")
   }
 
   global.Placemat = Placemat;

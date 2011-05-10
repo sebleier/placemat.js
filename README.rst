@@ -132,7 +132,7 @@ Placemat to do all the template loading.
 Testing
 -------
 
-`Python` and `Django`_ is required for testing so that Placemat.js can retrieve
+`Python`_ and `Django`_ is required for testing so that Placemat.js can retrieve
 templates from a server.
 
 .. _`Python`: http://python.org

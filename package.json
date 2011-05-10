@@ -1,0 +1,13 @@
+{
+    "name": "placemat",
+    "version":"0.1.0",
+    "description": "Client-side template caching and rendering using different template engines.",
+    "keywords": [
+        "template",
+        "caching"
+    ],
+    "author":"Sean Bleier",
+    "license": [
+        "BSD License"
+    ]
+}
