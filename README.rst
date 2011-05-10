@@ -4,9 +4,6 @@ Placemat.js
 placemat.js is a template and context manager using template rendering engines
 to place rendered html code into specific targets in the DOM.
 
-**NOTE:**  *This is barely alpha right now.  Name of the project might change, api
-will probably change, and certain functionality doesn't work as described below.*
-
 
 How does it Work?
 -----------------
