@@ -143,12 +143,16 @@ exports.fetchTemplateTests = platoon.unit({
 
 
 exports.renderTests = platoon.unit({
-    setUp:function(callback) {
+    setUp: function(callback) {
         store.clear();
         $("#dom-tests").empty();
         callback();
     },
-    tearDown:function(callback) {
+    tearDown: function(callback) {
+        $("dom-tests").removeAttr("data-render");
+        $("dom-tests").removeAttr("data-sort-on");
+        $("dom-tests").removeAttr("data-sort-order");
+        $("#dom-tests").empty();
         callback();
     },
   },
@@ -168,5 +172,33 @@ exports.renderTests = platoon.unit({
 
     placemat.render("#dom-tests", 'person', {'name': "Nikola Tesla"});
     assert.equal($("#dom-tests").html(), "Nikola Tesla");
+  },
+  function(assert) {
+    "Test targeting dom element using the prepend method"
+    $("#dom-tests").empty();
+    $("#dom-tests").data("render", "prepend");
+
+    var placemat = new Placemat(PlateBackend, {'prefix': 'http://127.0.0.1:8001/'});
+    placemat.Templates['people'] = new placemat.backend.Template("<div>{{ name }}</div>");
+
+    placemat.render("#dom-tests", 'people', [{'name': "Thomas Edison"}]);
+    assert.equal($("#dom-tests").html(), "<div>Thomas Edison</div>");
+
+    placemat.render("#dom-tests", 'people', [{'name': "Nikola Tesla"}]);
+    assert.equal($("#dom-tests").html(), "<div>Nikola Tesla</div><div>Thomas Edison</div>");
+  },
+  function(assert) {
+    "Test targeting dom element using the prepend method"
+    $("#dom-tests").empty();
+    $("#dom-tests").data("render", "append");
+
+    var placemat = new Placemat(PlateBackend, {'prefix': 'http://127.0.0.1:8001/'});
+    placemat.Templates['people'] = new placemat.backend.Template("<div>{{ name }}</div>");
+
+    placemat.render("#dom-tests", 'people', [{'name': "Thomas Edison"}]);
+    assert.equal($("#dom-tests").html(), "<div>Thomas Edison</div>");
+
+    placemat.render("#dom-tests", 'people', [{'name': "Nikola Tesla"}]);
+    assert.equal($("#dom-tests").html(), "<div>Thomas Edison</div><div>Nikola Tesla</div>");
   }
 );

@@ -219,41 +219,41 @@ window.PlateBackend = function(placemat) {
   };
 
   Placemat.prototype.render = function(target, template, context) {
-    var html, callback, sortOn, sortOrder, i, j, val;
+    var html, sortOn, sortOrder, i;
     var obj = $(target);
-    var render = obj.data().render;
+    var render = obj.data('render');
     var tpl = this.Templates[template];
     if (tpl instanceof this.AsyncResult) {
       tpl = template.get();
     }
+
     if (render === undefined) {
       this.backend.render(tpl, context, function(err, data) { obj.html(data); });
     } else {
-      sortOn = obj.data().sortOn;
-      sortOrder = obj.data().sortOrder;
-      if (sortOrder === undefined) {
-        sortOrder = "desc"
-      } else {
-        sortOrder = sortOrder.toLowerCase();
-      }
-      for(i = 0; i < context.length; i++) {
+      for (i = 0; i < context.length; i++) {
         switch(render) {
           case 'prepend':
-            callback = function(err, data) {
+            this.backend.render(tpl, context[i], function(err, data) {
               obj.prepend($(data));
-            }
+            });
             break;
           case 'append':
-            callback = function(err, data) {
+            this.backend.render(tpl, context[i], function(err, data) {
               obj.append($(data));
-            }
+            });
             break;
           case 'sorted':
             // TODO: implement
+            sortOn = obj.data('sortOn');
+            sortOrder = obj.data('sortOrder');
+            if (sortOrder === undefined) {
+              sortOrder = "desc"
+            } else {
+              sortOrder = sortOrder.toLowerCase();
+            }
             break;
           default:
         }
-        this.backend.render(tpl, context[i], callback);
       }
     }
   };
