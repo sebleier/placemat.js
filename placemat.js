@@ -108,17 +108,6 @@ window.PlateBackend = function(placemat) {
     this.Templates = {};
     this.Contexts = {};
 
-    this.AsyncResult = function(path, jqxhr) {
-      this.path = path;
-      this.jqxhr = jqxhr;
-      var _self = this;
-      this.get = function() {
-        _self.jqxhr.abort();
-        self.fetchTemplate(path, false);
-        return self.Templates[path];
-      };
-    };
-
     this.TemplateDoesNotExist = function(message) {
       this.message = message;
     }
@@ -145,7 +134,7 @@ window.PlateBackend = function(placemat) {
     }
   };
 
-  Placemat.prototype.fetchTemplate = function(path, async) {
+  Placemat.prototype.fetchTemplate = function(path, callback) {
     /*
     Uses the predefined path prefix with the path provided to fetch the template
     from the server.
@@ -157,10 +146,10 @@ window.PlateBackend = function(placemat) {
 
     var url = this.prefix + path;
     var self = this;
-    var jqxhr = $.ajax({
+    $.ajax({
       'url': url,
       'type': 'GET',
-      'async': async,
+      'async': true,
       'success': function(data, textStatus) {
         /*
         ``data`` may be a string, in which case we're interpreting ``data`` as
@@ -173,6 +162,9 @@ window.PlateBackend = function(placemat) {
           self.Templates[path] = new self.backend.Template(data.template);
           store.set(path, data);
         }
+        if (typeof(callback) === "function") {
+          callback();
+        }
       },
       'statusCode': {
         404: function() {
@@ -180,12 +172,9 @@ window.PlateBackend = function(placemat) {
         }
       }
     });
-    if (async) {
-      self.Templates[path] = new this.AsyncResult(path, jqxhr);
-    }
   };
 
-  Placemat.prototype.checkAndSet = function(path, hash, async) {
+  Placemat.prototype.checkAndSet = function(path, hash) {
     /*
     Checks to see if the template exists in the placemat cache and then the
     store cache.
@@ -195,7 +184,6 @@ window.PlateBackend = function(placemat) {
     template with the new one.  If the template does exist in the cache, then
     load the template and check to make sure if all the templates have loaded.
     */
-    async = async === undefined ? true : async;
 
     // Check Session cache to see if template has already been loaded
     var template = this.Templates[path];
@@ -203,9 +191,9 @@ window.PlateBackend = function(placemat) {
       // Check the cross-session cache if template exists
       template = store.get(path);
       if (template === undefined) { // Cache miss
-        this.Templates[path] = this.fetchTemplate(path, async);
+        this.Templates[path] = this.fetchTemplate(path);
       } else if (template.hash !== hash) { // Template has changed
-        this.Templates[path] = this.fetchTemplate(path, async);
+        this.Templates[path] = this.fetchTemplate(path);
       } else {
         this.Templates[path] = new this.backend.Template(template.template);
       }
@@ -216,7 +204,7 @@ window.PlateBackend = function(placemat) {
     /*
     Synchronously retreives a template.
     */
-    this.checkAndSet(path, hash, async=false);
+    this.checkAndSet(path, hash);
     return this.Templates[path];
   };
 
@@ -225,9 +213,6 @@ window.PlateBackend = function(placemat) {
     var obj = $(target);
     var render = obj.data('render');
     var tpl = this.Templates[template];
-    if (tpl instanceof this.AsyncResult) {
-      tpl = template.get();
-    }
     if (render === undefined) {
       this.backend.render(tpl, context, function(err, data) { obj.html(data); });
     } else {
@@ -294,6 +279,5 @@ window.PlateBackend = function(placemat) {
   }
 
   global.Placemat = Placemat;
-
 
 }(window, jQuery));

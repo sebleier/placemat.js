@@ -124,20 +124,20 @@ exports.fetchTemplateTests = platoon.unit({
     "Testing the fetchTemplate method"
     var placemat = new Placemat(PlateBackend, {'prefix': 'http://127.0.0.1:8001/'});
     var path = "template/test";
-    placemat.fetchTemplate(path, true);
-    assert.isInstance(placemat.Templates[path], placemat.AsyncResult);
-    var template = placemat.Templates[path].get();
-    assert.isInstance(template, plate.Template);
+    placemat.fetchTemplate(path, function() {
+        var template = placemat.Templates[path].get();
+        assert.isInstance(template, plate.Template);
+    });
   },
   function(assert) {
     "Test when a template does not exist"
     placemat = new Placemat();
     var path = "path/that/does/not/exist";
-    placemat.fetchTemplate(path, true);
-    assert.isInstance(placemat.Templates[path], placemat.AsyncResult);
-    var template = placemat.Templates[path].get();
-    assert.isInstance(template, placemat.TemplateDoesNotExist);
-    assert.equal(template.message, "path/that/does/not/exist template not found")
+    placemat.fetchTemplate(path, function() {
+        var template = placemat.Templates[path].get();
+        assert.isInstance(template, placemat.TemplateDoesNotExist);
+        assert.equal(template.message, "path/that/does/not/exist template not found")
+    });
   }
 );
 
