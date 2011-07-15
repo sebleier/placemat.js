@@ -130,7 +130,7 @@ exports.fetchTemplateTests = platoon.unit({
     });
   },
   function(assert) {
-    "Test when a template does not exist"
+    "Test when a template does not exist on server"
     placemat = new Placemat();
     var path = "path/that/does/not/exist";
     placemat.fetchTemplate(path, function() {
@@ -138,6 +138,13 @@ exports.fetchTemplateTests = platoon.unit({
         assert.isInstance(template, placemat.TemplateDoesNotExist);
         assert.equal(template.message, "path/that/does/not/exist template not found")
     });
+  },
+  function(assert) {
+    "Test when referencing a template that does not exist locally"
+    placemat = new Placemat();
+    assert.throws(placemat.TemplateDoesNotExist, function() {
+        placemat.render("#some-id", "template/that/does/not/exist", [{}]);
+    })
   }
 );
 

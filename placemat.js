@@ -213,6 +213,9 @@ window.PlateBackend = function(placemat) {
     var obj = $(target);
     var render = obj.data('render');
     var tpl = this.Templates[template];
+    if (tpl === undefined) {
+      throw new this.TemplateDoesNotExist("'"+template+'"" is the stuff of dreams and fancy; template does not exist');
+    }
     if (render === undefined) {
       this.backend.render(tpl, context, function(err, data) { obj.html(data); });
     } else {
