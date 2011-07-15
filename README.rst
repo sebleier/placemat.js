@@ -44,12 +44,12 @@ Example javascript::
         'b8330f5a1065f3916946d80c5ba109f0d0c653e6': 'timeline/item_photo.html',
     }
 
-    var placemat = new Placemat();
+    var placemat = new Placemat(PlateBackend);
     placemat.fetch(templates);
 
     // Get Some Data
     $.getJSON("/timeline.json", function(data) {
-        placemat.render("#timeline", "posts/item.html", data);
+        placemat.render("#timeline", "posts/item.html", {"item": data});
     });
 
 Example HTML::
@@ -71,7 +71,7 @@ posts/item.html::
         <time>item.created</time>
         {% if item.type == 'photo' %}
             {% include "timeline/item_photo.html" %}
-        {% end}
+        {% endif %}
         {% if item.type == 'video' %}
             {% include "timeline/item_video.html" %}
         {% endif %}
