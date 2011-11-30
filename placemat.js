@@ -208,10 +208,10 @@ window.PlateBackend = function(placemat) {
     return this.Templates[path];
   };
 
-  Placemat.prototype.render = function(target, template, context) {
+  Placemat.prototype.render = function(target, template, context, render) {
     var html, i, method;
     var obj = $(target);
-    var render = obj.data('render');
+    var render = render || obj.data('render');
     var tpl = this.Templates[template];
     if (tpl === undefined) {
       throw new this.TemplateDoesNotExist("'"+template+'"" is the stuff of dreams and fancy; template does not exist');
