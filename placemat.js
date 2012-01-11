@@ -217,7 +217,12 @@ window.PlateBackend = function(placemat) {
       throw new this.TemplateDoesNotExist("'"+template+'"" is the stuff of dreams and fancy; template does not exist');
     }
     if (render === undefined) {
-      this.backend.render(tpl, context, function(err, data) { obj.html(data); });
+      this.backend.render(tpl, context, function(err, data) {
+        if (err !== null) {
+          throw err;
+        }
+        obj.html(data);
+      });
     } else {
       for (i = 0; i < context.length; i++) {
         method = "render_"+render;
