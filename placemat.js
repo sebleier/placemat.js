@@ -218,9 +218,8 @@ window.PlateBackend = function(placemat) {
     }
     if (render === undefined) {
       this.backend.render(tpl, context, function(err, data) {
-        if (err !== null) {
-          throw err;
-        }
+        if(err) throw err;
+
         obj.html(data);
       });
     } else {
