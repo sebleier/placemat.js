@@ -149,7 +149,7 @@ window.PlateBackend = function(placemat) {
     $.ajax({
       'url': url,
       'type': 'GET',
-      'async': true,
+      'async': false,
       'success': function(data, textStatus) {
         /*
         ``data`` may be a string, in which case we're interpreting ``data`` as
@@ -191,9 +191,9 @@ window.PlateBackend = function(placemat) {
       // Check the cross-session cache if template exists
       template = store.get(path);
       if (template === undefined) { // Cache miss
-        this.Templates[path] = this.fetchTemplate(path);
+        this.fetchTemplate(path);
       } else if (template.hash !== hash) { // Template has changed
-        this.Templates[path] = this.fetchTemplate(path);
+        this.fetchTemplate(path);
       } else {
         this.Templates[path] = new this.backend.Template(template.template);
       }
