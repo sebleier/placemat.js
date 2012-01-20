@@ -78,6 +78,7 @@ window.PlateBackend = function(placemat) {
 **********/
 
 (function(global, $) {
+  function noop() {}
 
   Placemat = function(backend_cls, opts) {
     var opt;
@@ -208,10 +209,12 @@ window.PlateBackend = function(placemat) {
     return this.Templates[path];
   };
 
-  Placemat.prototype.render = function(target, template, context, render) {
+  Placemat.prototype.render = function(target, template, context, opts) {
+    var opts = opts || {}
     var html, i, method;
     var obj = $(target);
-    var render = render || obj.data('render');
+    var render = opts.render || obj.data('render');
+    var callback = opts.callback || noop;
     var tpl = this.Templates[template];
     if (tpl === undefined) {
       throw new this.TemplateDoesNotExist("'"+template+'"" is the stuff of dreams and fancy; template does not exist');
@@ -221,30 +224,33 @@ window.PlateBackend = function(placemat) {
         if(err) throw err;
 
         obj.html(data);
+        callback()
       });
     } else {
       for (i = 0; i < context.length; i++) {
         method = "render_"+render;
         if (this[method] !== undefined) {
-          this[method](obj, tpl, context[i]);
+          this[method](obj, tpl, context[i], callback);
         }
       }
     }
   };
 
-  Placemat.prototype.render_prepend = function(obj, tpl, context) {
+  Placemat.prototype.render_prepend = function(obj, tpl, context, callback) {
     this.backend.render(tpl, context, function(err, data) {
       obj.prepend($(data));
+      callback();
     });
   }
 
-  Placemat.prototype.render_append = function(obj, tpl, context) {
+  Placemat.prototype.render_append = function(obj, tpl, context, callback) {
     this.backend.render(tpl, context, function(err, data) {
       obj.append($(data));
+      callback();
     });
   }
 
-  Placemat.prototype.render_sorted = function(obj, tpl, context) {
+  Placemat.prototype.render_sorted = function(obj, tpl, context, callback) {
     var item;
     var sortOn = obj.data('sortOn');
     var sortOrder = obj.data('sortOrder');
@@ -282,6 +288,7 @@ window.PlateBackend = function(placemat) {
           }
         }
       }
+      callback();
     });
   }
 

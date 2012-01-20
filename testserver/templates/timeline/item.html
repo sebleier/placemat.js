@@ -1,0 +1,9 @@
+<article>
+    <time>item.created</time>
+    {% if item.type == 'photo' %}
+        {% include "timeline/item_photo.html" %}
+    {% endif %}
+    {% if item.type == 'video' %}
+        {% include "timeline/item_video.html" %}
+    {% endif %}
+</article>

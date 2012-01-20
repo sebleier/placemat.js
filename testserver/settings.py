@@ -1,15 +1,14 @@
 import os
-from posixpath import normpath
 
 ROOT_URLCONF = 'testserver.urls'
 
-path = os.path.join(os.path.dirname(__file__), "..")
-path = normpath(path)
+base_path = os.path.dirname(__file__)
 
-STATICFILES_DIRS = (path,)
 
+STATICFILES_DIRS = (os.path.join(base_path, 'static'),)
+STATIC_URL = 'static'
 TEMPLATE_DIRS = (
-    os.path.join(os.path.dirname(__file__), "templates"),
+    os.path.join(base_path, "templates"),
 )
 
 TEMPLATE_LOADERS = (
