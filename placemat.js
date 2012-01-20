@@ -260,10 +260,15 @@ window.PlateBackend = function(placemat) {
       sortOrder = sortOrder.toLowerCase();
     }
     this.backend.render(tpl, context, function(err, data) {
-      var i, value;
+      var i, value, new_value;
       var element = $(data);
       var items = obj.children();
-      var new_value = JSON.parse(element.find(sortOn).html());
+      try {
+         new_value = JSON.parse(element.find(sortOn).html());
+      } catch(err) {
+        // Value is not json, just just use the innerHTML string
+        new_value = element.find(sortOn).html();
+      }
       if (items.length === 0) {
         obj.append(element);
       }

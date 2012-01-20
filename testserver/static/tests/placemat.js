@@ -286,4 +286,34 @@ exports.renderTests = platoon.unit({
             assert.equal($("#dom-tests").html(), "<div><h3>Nikola Tesla</h3><time>3</time></div><div><h3>Stephen Hawking</h3><time>2</time></div><div><h3>Thomas Edison</h3><time>1</time></div>");
         }
     });
+  },
+  function(assert) {
+    "Test targeting dom element using the sorted method on the string element ascending order"
+    $("#dom-tests").empty();
+    $("#dom-tests").data("render", "sorted");
+    $("#dom-tests").data('sortOn', "> h3");
+    $("#dom-tests").data('sortOrder', "asc");
+
+    var placemat = new Placemat(PlateBackend, {'prefix': 'http://127.0.0.1:8001/'});
+    placemat.Templates['people'] = new placemat.backend.Template("<div><h3>{{ name }}</h3><time>{{ time }}</time></div>");
+
+    placemat.render("#dom-tests", 'people', [{'name': "Stephen Hawking", 'time': 1}], {
+        callback: function() {
+            assert.equal($("#dom-tests").html(), "<div><h3>Stephen Hawking</h3><time>1</time></div>");
+        }
+    });
+
+    placemat.render("#dom-tests", 'people', [{'name': "Thomas Edison", 'time': 2}], {
+        callback: function() {
+            assert.equal($("#dom-tests").html(), "<div><h3>Stephen Hawking</h3><time>1</time></div><div><h3>Thomas Edison</h3><time>2</time></div>");
+        }
+    });
+
+    placemat.render("#dom-tests", 'people', [{'name': "Nikola Tesla", 'time': 3}], {
+        callback: function() {
+            assert.equal($("#dom-tests").html(), "<div><h3>Nikola Tesla</h3><time>3</time></div><div><h3>Stephen Hawking</h3><time>1</time></div><div><h3>Thomas Edison</h3><time>2</time></div>");
+        }
+    });
+
+
 });
