@@ -114,7 +114,9 @@ window.PlateBackend = function(placemat) {
     }
   };
 
-  Placemat.prototype.fetch = function(obj) {
+  var proto = Placemat.prototype;
+
+  proto.fetch = function(obj) {
     /*
     Fetches templates based on their path, list of template paths, or a object
     with keys being template hashes and values being the template paths.
@@ -135,7 +137,7 @@ window.PlateBackend = function(placemat) {
     }
   };
 
-  Placemat.prototype.fetchTemplate = function(path, callback) {
+  proto.fetchTemplate = function(path, callback) {
     /*
     Uses the predefined path prefix with the path provided to fetch the template
     from the server.
@@ -175,7 +177,7 @@ window.PlateBackend = function(placemat) {
     });
   };
 
-  Placemat.prototype.checkAndSet = function(path, hash) {
+  proto.checkAndSet = function(path, hash) {
     /*
     Checks to see if the template exists in the placemat cache and then the
     store cache.
@@ -201,7 +203,7 @@ window.PlateBackend = function(placemat) {
     }
   };
 
-  Placemat.prototype.getTemplate = function(path, hash) {
+  proto.getTemplate = function(path, hash) {
     /*
     Synchronously retreives a template.
     */
@@ -209,7 +211,7 @@ window.PlateBackend = function(placemat) {
     return this.Templates[path];
   };
 
-  Placemat.prototype.render = function(target, template, context, opts) {
+  proto.render = function(target, template, context, opts) {
     var opts = opts || {}
     var html, i, method;
     var obj = $(target);
@@ -236,21 +238,21 @@ window.PlateBackend = function(placemat) {
     }
   };
 
-  Placemat.prototype.render_prepend = function(obj, tpl, context, callback) {
+  proto.render_prepend = function(obj, tpl, context, callback) {
     this.backend.render(tpl, context, function(err, data) {
       obj.prepend($(data));
       callback();
     });
   }
 
-  Placemat.prototype.render_append = function(obj, tpl, context, callback) {
+  proto.render_append = function(obj, tpl, context, callback) {
     this.backend.render(tpl, context, function(err, data) {
       obj.append($(data));
       callback();
     });
   }
 
-  Placemat.prototype.render_sorted = function(obj, tpl, context, callback) {
+  proto.render_sorted = function(obj, tpl, context, callback) {
     var item;
     var sortOn = obj.data('sortOn');
     var sortOrder = obj.data('sortOrder');
