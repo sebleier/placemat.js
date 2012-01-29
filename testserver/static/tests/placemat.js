@@ -23,7 +23,7 @@ exports.PlacematTests = platoon.unit({
   function(assert) {
     "Test passing in a custom backend";
     var SomeBackend = function() {};
-    placemat = new Placemat(SomeBackend);
+    placemat = new Placemat({'backend': SomeBackend});
     assert.notEqual(typeof(placemat.backend), "undefined");
     assert.isInstance(placemat.backend, SomeBackend);
   },
@@ -31,17 +31,17 @@ exports.PlacematTests = platoon.unit({
     "Initial Placemat with default prefix"
     placemat = new Placemat();
     assert.notEqual(typeof(placemat.prefix), "undefined");
-    assert.equal(placemat.prefix, '/fragments/');
+    assert.equal(placemat.prefix, '');
   },
   function(assert) {
     "Initial Placemat with custom prefix"
-    placemat = new Placemat(PlateBackend, {'prefix': 'http://templates.example.com'});
+    placemat = new Placemat({'prefix': 'http://templates.example.com'});
     assert.notEqual(typeof(placemat.prefix), "undefined");
     assert.equal(placemat.prefix, 'http://templates.example.com');
   },
   function(assert) {
     "Test trying to initialize Placemat with bogus values doesn't add to the attributes"
-    placemat = new Placemat(PlateBackend, {'cookieMonster': 'OmNomNom'});
+    placemat = new Placemat({'cookieMonster': 'OmNomNom'});
     assert.equal(typeof(placemat.cookieMonster), "undefined");
   }
 );
@@ -83,7 +83,7 @@ exports.fetchTests = platoon.unit({
     " Test that fetching templates caches the Template for for this session and stores it in the cross-session cache. "
 
     var i, count = 0;
-    var placemat = new Placemat(PlateBackend, {'prefix': 'http://127.0.0.1:8001/'});
+    var placemat = new Placemat({'prefix': 'http://127.0.0.1:8001/'});
     placemat.fetch({
         '8da5b2c83f835527a6ef7deccaa932fcacc8a29c': 'template/Gary',
         'e2f6ebfc44433cd4d270673127e0e8efd8cdbc46': 'template/Busey'
@@ -124,7 +124,7 @@ exports.fetchTemplateTests = platoon.unit({
   },
   function(assert) {
     "Testing the fetchTemplate method"
-    var placemat = new Placemat(PlateBackend, {'prefix': 'http://127.0.0.1:8001/'});
+    var placemat = new Placemat({'prefix': 'http://127.0.0.1:8001/'});
     var path = "template/test";
     placemat.fetchTemplate(path, function() {
         var template = placemat.Templates[path].get();
@@ -167,13 +167,13 @@ exports.renderTests = platoon.unit({
   },
   function(assert) {
     "Test simple rendering using the Plate backend"
-    var placemat = new Placemat(PlateBackend, {'prefix': 'http://127.0.0.1:8001/'});
+    var placemat = new Placemat({'prefix': 'http://127.0.0.1:8001/'});
     var template = new placemat.backend.Template("{{ name }}")
     placemat.backend.render(template, {'name': "Gary Busey"}, function(err, data) { assert.equal("Gary Busey", data)});
   },
   function(assert) {
     "Test targeting dom element using the replace method"
-    var placemat = new Placemat(PlateBackend, {'prefix': 'http://127.0.0.1:8001/'});
+    var placemat = new Placemat({'prefix': 'http://127.0.0.1:8001/'});
     placemat.Templates['person'] = new placemat.backend.Template("{{ name }}");
 
     placemat.render("#dom-tests", 'person', {'name': "Thomas Edison"}, {
@@ -195,7 +195,7 @@ exports.renderTests = platoon.unit({
     $("#dom-tests").empty();
     $("#dom-tests").data("render", "prepend");
 
-    var placemat = new Placemat(PlateBackend, {'prefix': 'http://127.0.0.1:8001/'});
+    var placemat = new Placemat({'prefix': 'http://127.0.0.1:8001/'});
     placemat.Templates['people'] = new placemat.backend.Template("<div>{{ name }}</div>");
 
     placemat.render("#dom-tests", 'people', [{'name': "Thomas Edison"}], {
@@ -217,7 +217,7 @@ exports.renderTests = platoon.unit({
     $("#dom-tests").empty();
     $("#dom-tests").data("render", "append");
 
-    var placemat = new Placemat(PlateBackend, {'prefix': 'http://127.0.0.1:8001/'});
+    var placemat = new Placemat({'prefix': 'http://127.0.0.1:8001/'});
     placemat.Templates['people'] = new placemat.backend.Template("<div>{{ name }}</div>");
 
     placemat.render("#dom-tests", 'people', [{'name': "Thomas Edison"}], {
@@ -240,7 +240,7 @@ exports.renderTests = platoon.unit({
     $("#dom-tests").data('sortOn', "> time");
     $("#dom-tests").data('sortOrder', "asc");
 
-    var placemat = new Placemat(PlateBackend, {'prefix': 'http://127.0.0.1:8001/'});
+    var placemat = new Placemat({'prefix': 'http://127.0.0.1:8001/'});
     placemat.Templates['people'] = new placemat.backend.Template("<div><h3>{{ name }}</h3><time>{{ time }}</time></div>");
 
     placemat.render("#dom-tests", 'people', [{'name': "Thomas Edison", 'time': 1}], {
@@ -268,7 +268,7 @@ exports.renderTests = platoon.unit({
     $("#dom-tests").data('sortOn', "> time");
     $("#dom-tests").data('sortOrder', "desc");
 
-    var placemat = new Placemat(PlateBackend, {'prefix': 'http://127.0.0.1:8001/'});
+    var placemat = new Placemat({'prefix': 'http://127.0.0.1:8001/'});
     placemat.Templates['people'] = new placemat.backend.Template("<div><h3>{{ name }}</h3><time>{{ time }}</time></div>");
 
     placemat.render("#dom-tests", 'people', [{'name': "Thomas Edison", 'time': 1}], {
@@ -296,7 +296,7 @@ exports.renderTests = platoon.unit({
     $("#dom-tests").data('sortOn', "> h3");
     $("#dom-tests").data('sortOrder', "asc");
 
-    var placemat = new Placemat(PlateBackend, {'prefix': 'http://127.0.0.1:8001/'});
+    var placemat = new Placemat({'prefix': 'http://127.0.0.1:8001/'});
     placemat.Templates['people'] = new placemat.backend.Template("<div><h3>{{ name }}</h3><time>{{ time }}</time></div>");
 
     placemat.render("#dom-tests", 'people', [{'name': "Stephen Hawking", 'time': 1}], {

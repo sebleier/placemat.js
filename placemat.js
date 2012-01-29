@@ -80,30 +80,29 @@ window.PlateBackend = function(placemat) {
 (function(global, $) {
   function noop() {}
 
-  Placemat = function(backend_cls, opts) {
+  Placemat = function(opts) {
     var opt;
     var self = this;
-    this.VERSION = [0, 1, 0];
-    this.VERSION_STRING = this.VERSION.join(".");
-    if (backend_cls === undefined) {
-      backend_cls = PlateBackend;
-    }
-    this.backend = new backend_cls(this)
-
     // Optional keyword arguments
-    if (opts === undefined) {
-      opts = {};
-    }
+    var opts = opts || {};
+
+    this.VERSION = [0, 2, 0];
+    this.VERSION_STRING = this.VERSION.join(".");
 
     // Defaults
     var options = {
-      'prefix': '/fragments/'
+      'prefix': '',
+      'backend': PlateBackend
     };
+
     for (opt in options) {
       if (options.hasOwnProperty(opt)) {
-        this[opt] = opts[opt] !== undefined ? opts[opt] : options[opt];
+        this[opt] = opts[opt] === undefined ? options[opt] : opts[opt];
       }
     }
+
+    this.backend_cls = this.backend;
+    this.backend = new this.backend_cls(this)
 
     // Other Setup
     this.Templates = {};
@@ -298,6 +297,8 @@ window.PlateBackend = function(placemat) {
       callback();
     });
   }
+
+  proto.
 
   global.Placemat = Placemat;
 
