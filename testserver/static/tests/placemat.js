@@ -81,32 +81,34 @@ exports.fetchTests = platoon.unit({
   },
   function(assert) {
     " Test that fetching templates caches the Template for for this session and stores it in the cross-session cache. "
+
     var i, count = 0;
     var placemat = new Placemat(PlateBackend, {'prefix': 'http://127.0.0.1:8001/'});
     placemat.fetch({
         '8da5b2c83f835527a6ef7deccaa932fcacc8a29c': 'template/Gary',
         'e2f6ebfc44433cd4d270673127e0e8efd8cdbc46': 'template/Busey'
-    });
-
-    for(path in placemat.Templates) {
-        if(placemat.Templates.hasOwnProperty(path)) {
-            count++;
+    }, function() {
+        for(path in placemat.Templates) {
+            if(placemat.Templates.hasOwnProperty(path)) {
+                count++;
+            }
         }
-    }
-    assert.equal(count, 2);
+        assert.equal(count, 2);
+    });
 
     // Fetch the templates again, this shouldn't change the template count
     count = 0;
     placemat.fetch({
         '8da5b2c83f835527a6ef7deccaa932fcacc8a29c': 'template/Gary',
         'e2f6ebfc44433cd4d270673127e0e8efd8cdbc46': 'template/Busey'
-    });
-    for(path in placemat.Templates) {
-        if(placemat.Templates.hasOwnProperty(path)) {
-            count++;
+    }, function() {
+        for(path in placemat.Templates) {
+            if(placemat.Templates.hasOwnProperty(path)) {
+                count++;
+            }
         }
-    }
-    assert.equal(count, 2);
+        assert.equal(count, 2);
+    });
   }
 );
 
