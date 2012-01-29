@@ -86,7 +86,7 @@ window.PlateBackend = function(placemat) {
     // Optional keyword arguments
     var opts = opts || {};
 
-    this.VERSION = [0, 2, 0];
+    this.VERSION = [0, 2, 1];
     this.VERSION_STRING = this.VERSION.join(".");
 
     // Defaults
@@ -108,12 +108,40 @@ window.PlateBackend = function(placemat) {
     this.Templates = {};
     this.Contexts = {};
 
+
     this.TemplateDoesNotExist = function(message) {
       this.message = message;
     }
   };
 
   var proto = Placemat.prototype;
+
+  proto.cache = {
+    set: function(key, value, timeout) {
+      var timeout = timeout === undefined ? -1 : timeout;
+      var self = this;
+      this.handles = this.handles || {};
+
+      if (key in this.handles) {
+        clearTimeout(this.handles[key]);
+      }
+
+      if (timeout === -1) {
+        store.set(key, value);
+      } else if (timeout !== 0) {
+        store.set(key, value);
+        this.handles[key] = setTimeout(function() {
+          if (key in self.handles) {
+            delete self.handles[key];
+          }
+          store.remove(key);
+        }, timeout * 1000);
+      }
+    },
+    get: function(key) {
+      return store.get(key);
+    }
+  }
 
   proto.fetch = function(obj) {
     /*
@@ -162,7 +190,7 @@ window.PlateBackend = function(placemat) {
           self.Templates[path] = new self.backend.Template(data);
         } else {
           self.Templates[path] = new self.backend.Template(data.template);
-          store.set(path, data);
+          this.cache.set(path, data);
         }
         if (typeof(callback) === "function") {
           callback();
@@ -191,7 +219,7 @@ window.PlateBackend = function(placemat) {
     var template = this.Templates[path];
     if (template === undefined) {
       // Check the cross-session cache if template exists
-      template = store.get(path);
+      template = this.cache.get(path);
       if (template === undefined) { // Cache miss
         this.fetchTemplate(path);
       } else if (template.hash !== hash) { // Template has changed
@@ -297,8 +325,6 @@ window.PlateBackend = function(placemat) {
       callback();
     });
   }
-
-  proto.
 
   global.Placemat = Placemat;
 

@@ -112,7 +112,6 @@ exports.fetchTests = platoon.unit({
   }
 );
 
-
 exports.fetchTemplateTests = platoon.unit({
     setUp:function(callback) {
         store.clear()
@@ -316,6 +315,48 @@ exports.renderTests = platoon.unit({
             assert.equal($("#dom-tests").html(), "<div><h3>Nikola Tesla</h3><time>3</time></div><div><h3>Stephen Hawking</h3><time>1</time></div><div><h3>Thomas Edison</h3><time>2</time></div>");
         }
     });
-
-
 });
+
+exports.cacheTests = platoon.unit({
+    setUp: function(callback) {
+        callback();
+    },
+    tearDown: function(callback) {
+        callback();
+    }
+},
+function(assert) {
+    "Test cache set no timeout"
+    var placemat = new Placemat();
+    placemat.cache.set('foo', 'bar')
+    assert.equal(placemat.cache.get('foo'), 'bar')
+},
+function(assert) {
+    "Test cache set -1 timeout"
+    var placemat = new Placemat();
+    placemat.cache.set('foo', 'bar', -1)
+    assert.equal(placemat.cache.get('foo'), 'bar')
+},
+function(assert) {
+    "Test cache set 0 timeout"
+    store.clear();
+    var placemat = new Placemat();
+    placemat.cache.set('foo', 'bar', 0)
+    assert.equal(placemat.cache.get('foo'), undefined)
+},
+function(assert) {
+    "Test cache normal timeout"
+    store.clear();
+    var placemat = new Placemat();
+    placemat.cache.set('foo', 'bar', 1)
+
+    setTimeout(assert.async(function() {
+        console.log(placemat.cache.get('foo'))
+        assert.equal(placemat.cache.get('foo'), 'bar')
+    }), 100);
+
+    setTimeout(assert.async(function() {
+        assert.equal(placemat.cache.get('foo'), undefined)
+    }), 1200);
+}
+);
