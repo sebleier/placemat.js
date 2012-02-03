@@ -86,7 +86,7 @@ window.PlateBackend = function(placemat) {
     // Optional keyword arguments
     var opts = opts || {};
 
-    this.VERSION = [0, 2, 1];
+    this.VERSION = [0, 2, 2];
     this.VERSION_STRING = this.VERSION.join(".");
 
     // Defaults
@@ -280,30 +280,32 @@ window.PlateBackend = function(placemat) {
   }
 
   proto.render_sorted = function(obj, tpl, context, callback) {
+    var self = this;
     var item;
     var sortOn = obj.data('sortOn');
     var sortOrder = obj.data('sortOrder');
+    var dataType = obj.data('dataType');
+
     if (sortOrder === undefined) {
       sortOrder = "desc"
     } else {
       sortOrder = sortOrder.toLowerCase();
     }
+
     this.backend.render(tpl, context, function(err, data) {
-      var i, value, new_value;
       var element = $(data);
-      var items = obj.children();
-      try {
-         new_value = JSON.parse(element.find(sortOn).html());
-      } catch(err) {
-        // Value is not json, just just use the innerHTML string
-        new_value = element.find(sortOn).html();
-      }
+      var item, items = obj.children();
+      var value;
+      var comparable = element.find(sortOn);
+      var new_value = self.getElementValue(comparable, dataType);
+
       if (items.length === 0) {
         obj.append(element);
       }
-      for(i = 0; i < items.length; i++) {
+      for(var i = 0, n = items.length; i < n; i++) {
         item = $(items[i]);
-        value = JSON.parse(item.find(sortOn).html());
+        comparable = item.find(sortOn);
+        value = self.getElementValue(comparable, dataType);
         if (sortOrder === 'asc') {
           if (new_value < value) {
             element.insertBefore(item);
@@ -324,6 +326,24 @@ window.PlateBackend = function(placemat) {
       }
       callback();
     });
+  }
+
+  // Utility functions
+  proto.getElementValue = function(element, dataType) {
+    var element = $(element);
+    var value, raw = element.text();
+    switch (dataType) {
+      case "integer":
+        value = parseInt(raw);
+      case "float":
+        value = parseFloat(raw);
+      case "date":
+        value = Date.parse(raw);
+      default:
+        value = parseFloat(raw)
+        value = isNaN(value) ? raw : value;
+    }
+    return value
   }
 
   global.Placemat = Placemat;

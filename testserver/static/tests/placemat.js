@@ -315,6 +315,36 @@ exports.renderTests = platoon.unit({
             assert.equal($("#dom-tests").html(), "<div><h3>Nikola Tesla</h3><time>3</time></div><div><h3>Stephen Hawking</h3><time>1</time></div><div><h3>Thomas Edison</h3><time>2</time></div>");
         }
     });
+},
+function(assert) {
+    "Test targeting dom element hinting at data type ascending order"
+    $("#dom-tests").empty();
+    $("#dom-tests").data("render", "sorted");
+    $("#dom-tests").data('sortOn', "> h3");
+    $("#dom-tests").data('sortOrder', "asc");
+    $("#dom-tests").data('dataType', "float");
+
+
+    var placemat = new Placemat({'prefix': 'http://127.0.0.1:8001/'});
+    placemat.Templates['people'] = new placemat.backend.Template('<div><h3>{{ name }}</h3><div class="animal-magnetism">{{ score }}</div></div>;');
+
+    placemat.render("#dom-tests", 'people', [{'name': "Stephen Hawking", 'score': 2.5}], {
+        callback: function() {
+            assert.equal($("#dom-tests").html(), '<div><h3>Stephen Hawking</h3><div class="animal-magnetism">2.5</div></div>');
+        }
+    });
+
+    placemat.render("#dom-tests", 'people', [{'name': "Thomas Edison", 'score': 2}], {
+        callback: function() {
+            assert.equal($("#dom-tests").html(), '<div><h3>Thomas Edison</h3><div class="animal-magnetism">2</div></div><div><h3>Stephen Hawking</h3><div class="animal-magnetism">2.5</div></div>');
+        }
+    });
+
+    placemat.render("#dom-tests", 'people', [{'name': "Nikola Tesla", 'score': 4}], {
+        callback: function() {
+            assert.equal($("#dom-tests").html(), '<div><h3>Thomas Edison</h3><div class="animal-magnetism">2.4</div></div><div><h3>Stephen Hawking</h3><div class="animal-magnetism">2.5</div></div><div><h3>Nikola Tesla</h3><div class="animal-magnetism">4</div></div>');
+        }
+    });
 });
 
 exports.cacheTests = platoon.unit({
@@ -351,12 +381,10 @@ function(assert) {
     placemat.cache.set('foo', 'bar', 1)
 
     setTimeout(assert.async(function() {
-        console.log(placemat.cache.get('foo'))
         assert.equal(placemat.cache.get('foo'), 'bar')
     }), 100);
 
     setTimeout(assert.async(function() {
         assert.equal(placemat.cache.get('foo'), undefined)
     }), 1200);
-}
-);
+});
