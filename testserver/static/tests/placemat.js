@@ -144,7 +144,7 @@ exports.fetchTemplateTests = platoon.unit({
     "Test when referencing a template that does not exist locally"
     placemat = new Placemat();
     assert.throws(placemat.TemplateDoesNotExist, function() {
-        placemat.render("#some-id", "template/that/does/not/exist", [{}]);
+        placemat.render("#some-id", "template/that/does/not/exist");
     })
   }
 );
@@ -176,14 +176,14 @@ exports.renderTests = platoon.unit({
     placemat.Templates['person'] = new placemat.backend.Template("{{ name }}");
 
     placemat.render("#dom-tests", 'person', {'name': "Thomas Edison"}, {
-        callback: function() {
+        postRender: function() {
             assert.equal($("#dom-tests").html(), "Thomas Edison");
         }
     });
 
 
     placemat.render("#dom-tests", 'person', {'name': "Nikola Tesla"}, {
-        callback: function() {
+        postRender: function() {
             assert.equal($("#dom-tests").html(), "Nikola Tesla");
         }
     });
@@ -198,14 +198,14 @@ exports.renderTests = platoon.unit({
     placemat.Templates['people'] = new placemat.backend.Template("<div>{{ name }}</div>");
 
     placemat.render("#dom-tests", 'people', [{'name': "Thomas Edison"}], {
-        callback: function() {
+        postRender: function() {
             assert.equal($("#dom-tests").html(), "<div>Thomas Edison</div>");
         }
     });
 
 
     placemat.render("#dom-tests", 'people', [{'name': "Nikola Tesla"}], {
-        callback: function() {
+        postRender: function() {
             assert.equal($("#dom-tests").html(), "<div>Nikola Tesla</div><div>Thomas Edison</div>");
         }
     });
@@ -220,14 +220,14 @@ exports.renderTests = platoon.unit({
     placemat.Templates['people'] = new placemat.backend.Template("<div>{{ name }}</div>");
 
     placemat.render("#dom-tests", 'people', [{'name': "Thomas Edison"}], {
-        callback: function() {
+        postRender: function() {
             assert.equal($("#dom-tests").html(), "<div>Thomas Edison</div>");
         }
     });
 
 
     placemat.render("#dom-tests", 'people', [{'name': "Nikola Tesla"}], {
-        callback: function() {
+        postRender: function() {
             assert.equal($("#dom-tests").html(), "<div>Thomas Edison</div><div>Nikola Tesla</div>");
         }
     });
@@ -243,19 +243,47 @@ exports.renderTests = platoon.unit({
     placemat.Templates['people'] = new placemat.backend.Template("<div><h3>{{ name }}</h3><time>{{ time }}</time></div>");
 
     placemat.render("#dom-tests", 'people', [{'name': "Thomas Edison", 'time': 1}], {
-        callback: function() {
+        postRender: function() {
             assert.equal($("#dom-tests").html(), "<div><h3>Thomas Edison</h3><time>1</time></div>");
         }
     });
 
     placemat.render("#dom-tests", 'people', [{'name': "Nikola Tesla", 'time': 3}], {
-        callback: function() {
+        postRender: function() {
             assert.equal($("#dom-tests").html(), "<div><h3>Thomas Edison</h3><time>1</time></div><div><h3>Nikola Tesla</h3><time>3</time></div>");
         }
     });
 
     placemat.render("#dom-tests", 'people', [{'name': "Stephen Hawking", 'time': 2}], {
-        callback: function() {
+        postRender: function() {
+            assert.equal($("#dom-tests").html(), "<div><h3>Thomas Edison</h3><time>1</time></div><div><h3>Stephen Hawking</h3><time>2</time></div><div><h3>Nikola Tesla</h3><time>3</time></div>");
+        }
+    });
+  },
+  function(assert) {
+    "Test postRender and finished callbacks are called"
+    $("#dom-tests").empty();
+    $("#dom-tests").data("render", "sorted");
+    $("#dom-tests").data('sortOn', "> time");
+    $("#dom-tests").data('sortOrder', "asc");
+
+    var placemat = new Placemat({'prefix': 'http://127.0.0.1:8001/'});
+    placemat.Templates['people'] = new placemat.backend.Template("<div><h3>{{ name }}</h3><time>{{ time }}</time></div>");
+
+    placemat.render("#dom-tests", 'people', [{'name': "Thomas Edison", 'time': 1}], {
+        postRender: function() {
+            assert.equal($("#dom-tests").html(), "<div><h3>Thomas Edison</h3><time>1</time></div>");
+        }
+    });
+
+    placemat.render("#dom-tests", 'people', [{'name': "Nikola Tesla", 'time': 3}], {
+        postRender: function() {
+            assert.equal($("#dom-tests").html(), "<div><h3>Thomas Edison</h3><time>1</time></div><div><h3>Nikola Tesla</h3><time>3</time></div>");
+        }
+    });
+
+    placemat.render("#dom-tests", 'people', [{'name': "Stephen Hawking", 'time': 2}], {
+        postRender: function() {
             assert.equal($("#dom-tests").html(), "<div><h3>Thomas Edison</h3><time>1</time></div><div><h3>Stephen Hawking</h3><time>2</time></div><div><h3>Nikola Tesla</h3><time>3</time></div>");
         }
     });
@@ -271,19 +299,19 @@ exports.renderTests = platoon.unit({
     placemat.Templates['people'] = new placemat.backend.Template("<div><h3>{{ name }}</h3><time>{{ time }}</time></div>");
 
     placemat.render("#dom-tests", 'people', [{'name': "Thomas Edison", 'time': 1}], {
-        callback: function() {
+        postRender: function() {
             assert.equal($("#dom-tests").html(), "<div><h3>Thomas Edison</h3><time>1</time></div>");
         }
     });
 
     placemat.render("#dom-tests", 'people', [{'name': "Nikola Tesla", 'time': 3}], {
-        callback: function() {
+        postRender: function() {
             assert.equal($("#dom-tests").html(), "<div><h3>Nikola Tesla</h3><time>3</time></div><div><h3>Thomas Edison</h3><time>1</time></div>");
         }
     });
 
     placemat.render("#dom-tests", 'people', [{'name': "Stephen Hawking", 'time': 2}], {
-        callback: function() {
+        postRender: function() {
             assert.equal($("#dom-tests").html(), "<div><h3>Nikola Tesla</h3><time>3</time></div><div><h3>Stephen Hawking</h3><time>2</time></div><div><h3>Thomas Edison</h3><time>1</time></div>");
         }
     });
@@ -299,19 +327,19 @@ exports.renderTests = platoon.unit({
     placemat.Templates['people'] = new placemat.backend.Template("<div><h3>{{ name }}</h3><time>{{ time }}</time></div>");
 
     placemat.render("#dom-tests", 'people', [{'name': "Stephen Hawking", 'time': 1}], {
-        callback: function() {
+        postRender: function() {
             assert.equal($("#dom-tests").html(), "<div><h3>Stephen Hawking</h3><time>1</time></div>");
         }
     });
 
     placemat.render("#dom-tests", 'people', [{'name': "Thomas Edison", 'time': 2}], {
-        callback: function() {
+        postRender: function() {
             assert.equal($("#dom-tests").html(), "<div><h3>Stephen Hawking</h3><time>1</time></div><div><h3>Thomas Edison</h3><time>2</time></div>");
         }
     });
 
     placemat.render("#dom-tests", 'people', [{'name': "Nikola Tesla", 'time': 3}], {
-        callback: function() {
+        postRender: function() {
             assert.equal($("#dom-tests").html(), "<div><h3>Nikola Tesla</h3><time>3</time></div><div><h3>Stephen Hawking</h3><time>1</time></div><div><h3>Thomas Edison</h3><time>2</time></div>");
         }
     });
@@ -320,7 +348,7 @@ function(assert) {
     "Test targeting dom element hinting at data type ascending order"
     $("#dom-tests").empty();
     $("#dom-tests").data("render", "sorted");
-    $("#dom-tests").data('sortOn', "> h3");
+    $("#dom-tests").data('sortOn', ".animal-magnetism");
     $("#dom-tests").data('sortOrder', "asc");
     $("#dom-tests").data('dataType', "float");
 
@@ -328,21 +356,18 @@ function(assert) {
     var placemat = new Placemat({'prefix': 'http://127.0.0.1:8001/'});
     placemat.Templates['people'] = new placemat.backend.Template('<div><h3>{{ name }}</h3><div class="animal-magnetism">{{ score }}</div></div>;');
 
-    placemat.render("#dom-tests", 'people', [{'name': "Stephen Hawking", 'score': 2.5}], {
-        callback: function() {
-            assert.equal($("#dom-tests").html(), '<div><h3>Stephen Hawking</h3><div class="animal-magnetism">2.5</div></div>');
-        }
-    });
+    var context = [
+        {'name': "Stephen Hawking", 'score': 2.5},
+        {'name': "Thomas Edison", 'score': 2},
+        {'name': "Nikola Tesla", 'score': 4}
+    ]
 
-    placemat.render("#dom-tests", 'people', [{'name': "Thomas Edison", 'score': 2}], {
-        callback: function() {
-            assert.equal($("#dom-tests").html(), '<div><h3>Thomas Edison</h3><div class="animal-magnetism">2</div></div><div><h3>Stephen Hawking</h3><div class="animal-magnetism">2.5</div></div>');
-        }
-    });
-
-    placemat.render("#dom-tests", 'people', [{'name': "Nikola Tesla", 'score': 4}], {
-        callback: function() {
-            assert.equal($("#dom-tests").html(), '<div><h3>Thomas Edison</h3><div class="animal-magnetism">2.4</div></div><div><h3>Stephen Hawking</h3><div class="animal-magnetism">2.5</div></div><div><h3>Nikola Tesla</h3><div class="animal-magnetism">4</div></div>');
+    placemat.render("#dom-tests", 'people', context, {
+        finished: function() {
+            console.log($("#dom-tests").html())
+            console.log('<div><h3>Thomas Edison</h3><div class="animal-magnetism">2</div></div><div><h3>Stephen Hawking</h3><div class="animal-magnetism">2.5</div></div><div><h3>Nikola Tesla</h3><div class="animal-magnetism">4</div></div>')
+            console.log("\n");
+            assert.equal($("#dom-tests").html(), '<div><h3>Thomas Edison</h3><div class="animal-magnetism">2</div></div><div><h3>Stephen Hawking</h3><div class="animal-magnetism">2.5</div></div><div><h3>Nikola Tesla</h3><div class="animal-magnetism">4</div></div>');
         }
     });
 });

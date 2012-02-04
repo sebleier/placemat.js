@@ -86,7 +86,7 @@ window.PlateBackend = function(placemat) {
     // Optional keyword arguments
     var opts = opts || {};
 
-    this.VERSION = [0, 2, 2];
+    this.VERSION = [0, 2, 3];
     this.VERSION_STRING = this.VERSION.join(".");
 
     // Defaults
@@ -239,34 +239,59 @@ window.PlateBackend = function(placemat) {
   };
 
   proto.render = function(target, template, context, opts) {
-    var opts = opts || {}
-    var html, i, method;
+    var context = context || [{}];
+    context = $.isArray(context) ? context : [context];
+    var opts = opts || {};
+    var html, method;
+    var i = 0;
     var obj = $(target);
-    var render = opts.render || obj.data('render');
-    var callback = opts.callback || noop;
+    var render = opts.render || obj.data('render') || 'replace';
+
+    // Callbacks
+    var postRender = opts.postRender || noop;
+    var finished = opts.finished || noop;
+    var error = opts.error || noop
+
     var tpl = this.Templates[template];
     if (tpl === undefined) {
       throw new this.TemplateDoesNotExist("'"+template+'"" is the stuff of dreams and fancy; template does not exist');
     }
-    if (render === undefined) {
-      this.backend.render(tpl, context, function(err, data) {
-        if(err) throw err;
+    var completed = 0;
+    function processCallbacks(err) {
+      if (err) {
+        error(err);
+      } else {
+        postRender();
 
-        obj.html(data);
-        callback()
-      });
-    } else {
-      for (i = 0; i < context.length; i++) {
-        method = "render_"+render;
-        if (this[method] !== undefined) {
-          this[method](obj, tpl, context[i], callback);
+        if (completed++ === context.length) {
+          finished();
         }
+      }
+    }
+
+    for (i = 0; i < context.length; i++) {
+      method = "render_"+render;
+      if (this[method] !== undefined) {
+        this[method](obj, tpl, context[i], processCallbacks);
       }
     }
   };
 
+  proto.render_replace = function(obj, tpl, context, callback) {
+    this.backend.render(tpl, context, function(err, data) {
+      if(err) {
+        callback(err);
+      }
+      obj.html(data);
+      callback()
+    });
+  }
+
   proto.render_prepend = function(obj, tpl, context, callback) {
     this.backend.render(tpl, context, function(err, data) {
+      if (err) {
+        return callback(err)
+      }
       obj.prepend($(data));
       callback();
     });
@@ -274,8 +299,11 @@ window.PlateBackend = function(placemat) {
 
   proto.render_append = function(obj, tpl, context, callback) {
     this.backend.render(tpl, context, function(err, data) {
+      if (err) {
+        return callback(err)
+      }
       obj.append($(data));
-      callback();
+      callback()
     });
   }
 
@@ -293,6 +321,9 @@ window.PlateBackend = function(placemat) {
     }
 
     this.backend.render(tpl, context, function(err, data) {
+      if (err) {
+        return callback(err)
+      }
       var element = $(data);
       var item, items = obj.children();
       var value;

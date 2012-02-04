@@ -4,6 +4,7 @@ import os
 from posixpath import normpath
 from django.conf.urls.defaults import patterns, url
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from django.template import Template, Context
 from django.http import HttpResponse
 
 
@@ -23,8 +24,9 @@ def test_view(request):
     base_path = normpath(os.path.dirname(__file__))
     path = os.path.join(base_path, 'templates/tests.html')
     with open(path) as f:
-        template = f.read()
-    return HttpResponse(template, mimetype="text/html")
+        t = Template(f.read())
+    c = Context({})
+    return HttpResponse(t.render(c))
 
 
 urlpatterns = patterns('',
