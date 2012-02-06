@@ -263,7 +263,7 @@ window.PlateBackend = function(placemat) {
       } else {
         postRender();
 
-        if (completed++ === context.length) {
+        if (++completed === context.length) {
           finished();
         }
       }
