@@ -385,6 +385,28 @@ window.PlateBackend = function(placemat) {
     return value
   }
 
+  proto.resolve = function(url) {
+    var pattern, match, view, args, kwargs;
+    for(var i = 0, n = this.patterns.length; i < n; i++) {
+        pattern = this.patterns[i][0];
+        match = pattern.exec(url)
+        if (match) {
+            args = match.slice(1);
+            kwargs = match.group;
+            view = this.patterns[i][1];
+            return [view, args, kwargs];
+        }
+    }
+    return null;
+  }
+
+  proto.addPatterns = function(urlpatterns) {
+    this.patterns = [];
+    for(var i = 0, n = urlpatterns.length; i < n; i++) {
+        this.patterns.push([XRegExp(urlpatterns[i][0]), urlpatterns[i][1]]);
+    }
+  }
+
   global.Placemat = Placemat;
 
 }(window, jQuery));

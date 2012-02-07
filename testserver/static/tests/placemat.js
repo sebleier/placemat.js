@@ -413,3 +413,50 @@ function(assert) {
         assert.equal(placemat.cache.get('foo'), undefined)
     }), 1200);
 });
+exports.urlPatternTests = platoon.unit({
+    setUp: function(callback) {
+        callback();
+    },
+    tearDown: function(callback) {
+        callback();
+    }
+},
+function(assert) {
+    "Test "
+    urlpatterns = [
+        ['^articles/2003/$', 'news.views.special_case_2003'],
+        ['^articles/(\\d{4})/$', 'news.views.year_archive'],
+        ['^articles/(\\d{4})/(\\d{2})/$', 'news.views.month_archive'],
+        ['^articles/(\\d{4})/(\\d{2})/(\\d+)/$', 'news.views.article_detail'],
+        ['^archive/(?P<year>\\d{4})/(?P<month>\\d{2})/(?P<day>\\d{2})/$', 'news.views.article_detail']
+    ]
+    var placemat = new Placemat();
+    placemat.addPatterns(urlpatterns);
+    var match;
+
+    match = placemat.resolve('articles/2003/');
+    assert.notEqual(match, null);
+    assert.equal(match[0], 'news.views.special_case_2003');
+
+    match = placemat.resolve('articles/2012/');
+    assert.equal(match[1][0], "2012");
+    assert.equal(match[0], 'news.views.year_archive');
+
+    match = placemat.resolve('articles/2012/02/');
+    assert.equal(match[1][0], "2012");
+    assert.equal(match[1][1], "02");
+    assert.equal(match[0], 'news.views.month_archive');
+
+    match = placemat.resolve('articles/2012/02/03/');
+    assert.equal(match[1][0], "2012");
+    assert.equal(match[1][1], "02");
+    assert.equal(match[1][2], "03");
+    assert.equal(match[0], 'news.views.article_detail');
+
+    match = placemat.resolve('archive/2012/02/03/');
+    assert.equal(match[2].year, "2012");
+    assert.equal(match[2].month, "02");
+    assert.equal(match[2].day, "03");
+    assert.equal(match[0], 'news.views.article_detail');
+});
+
