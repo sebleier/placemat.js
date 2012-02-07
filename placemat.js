@@ -108,6 +108,15 @@ window.PlateBackend = function(placemat) {
     this.Templates = {};
     this.Contexts = {};
 
+    // Add support for python style named groups
+    XRegExp.addToken(
+        /\(\?P<([$\w]+)>/,
+        function (match) {
+            this.captureNames.push(match[1]);
+            this.hasNamedCapture = true;
+            return "(";
+        }
+    );
 
     this.TemplateDoesNotExist = function(message) {
       this.message = message;
@@ -262,7 +271,6 @@ window.PlateBackend = function(placemat) {
         error(err);
       } else {
         postRender();
-
         if (++completed === context.length) {
           finished();
         }
