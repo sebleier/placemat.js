@@ -364,9 +364,6 @@ function(assert) {
 
     placemat.render("#dom-tests", 'people', context, {
         finished: function() {
-            console.log($("#dom-tests").html())
-            console.log('<div><h3>Thomas Edison</h3><div class="animal-magnetism">2</div></div><div><h3>Stephen Hawking</h3><div class="animal-magnetism">2.5</div></div><div><h3>Nikola Tesla</h3><div class="animal-magnetism">4</div></div>')
-            console.log("\n");
             assert.equal($("#dom-tests").html(), '<div><h3>Thomas Edison</h3><div class="animal-magnetism">2</div></div><div><h3>Stephen Hawking</h3><div class="animal-magnetism">2.5</div></div><div><h3>Nikola Tesla</h3><div class="animal-magnetism">4</div></div>');
         }
     });
